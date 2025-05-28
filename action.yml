@@ -53,6 +53,24 @@ inputs:
     required: false
     default: "false"
 
+  # ✅ OAuth用追加
+  use_oauth:
+    description: "Use Claude AI OAuth authentication instead of API key"
+    required: false
+    default: "false"
+  claude_access_token:
+    description: "Claude AI OAuth access token (required when use_oauth is true)"
+    required: false
+    default: ""
+  claude_refresh_token:
+    description: "Claude AI OAuth refresh token (required when use_oauth is true)"
+    required: false
+    default: ""
+  claude_expires_at:
+    description: "Claude AI OAuth token expiration timestamp (required when use_oauth is true)"
+    required: false
+    default: ""
+
   timeout_minutes:
     description: "Timeout in minutes for execution"
     required: false
@@ -105,25 +123,23 @@ runs:
         use_bedrock: ${{ inputs.use_bedrock }}
         use_vertex: ${{ inputs.use_vertex }}
         anthropic_api_key: ${{ inputs.anthropic_api_key }}
+        # ✅ OAuth認証用に追加
+        use_oauth: 'true'
+        claude_access_token: ${{ inputs.claude_access_token }}
+        claude_refresh_token: ${{ inputs.claude_refresh_token }}
+        claude_expires_at: ${{ inputs.claude_expires_at }}
       env:
-        # Model configuration
         ANTHROPIC_MODEL: ${{ inputs.model || inputs.anthropic_model }}
         GITHUB_TOKEN: ${{ steps.prepare.outputs.GITHUB_TOKEN }}
-
-        # AWS configuration
         AWS_REGION: ${{ env.AWS_REGION }}
         AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
         AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
         ANTHROPIC_BEDROCK_BASE_URL: ${{ env.ANTHROPIC_BEDROCK_BASE_URL }}
-
-        # GCP configuration
         ANTHROPIC_VERTEX_PROJECT_ID: ${{ env.ANTHROPIC_VERTEX_PROJECT_ID }}
         CLOUD_ML_REGION: ${{ env.CLOUD_ML_REGION }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
         ANTHROPIC_VERTEX_BASE_URL: ${{ env.ANTHROPIC_VERTEX_BASE_URL }}
-
-        # Model-specific regions for Vertex
         VERTEX_REGION_CLAUDE_3_5_HAIKU: ${{ env.VERTEX_REGION_CLAUDE_3_5_HAIKU }}
         VERTEX_REGION_CLAUDE_3_5_SONNET: ${{ env.VERTEX_REGION_CLAUDE_3_5_SONNET }}
         VERTEX_REGION_CLAUDE_3_7_SONNET: ${{ env.VERTEX_REGION_CLAUDE_3_7_SONNET }}
